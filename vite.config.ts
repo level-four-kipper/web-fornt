@@ -3,7 +3,6 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import AutoImport from 'unplugin-auto-import/vite'
-import ViteImages from 'vite-plugin-vue-images'
 import { resolve } from 'node:path'
 
 // https://vitejs.dev/config/
@@ -21,10 +20,7 @@ export default defineConfig({
       },
       dts: true, // 生成 `auto-import.d.ts` 全局声明
     }),
-    ViteImages({
-      dirs: ['src/assets/img'], // 指定图片存放目录
-      extensions: ['jpg', 'jpeg', 'png', 'svg', 'webp'], // 有效的图像扩展
-    }),
+
   ],
   optimizeDeps: {
     include: ['element-plus/lib/locale/lang/zh-cn'],
@@ -34,7 +30,7 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-  
+
   build: {
     assetsDir: 'static',
     rollupOptions: {

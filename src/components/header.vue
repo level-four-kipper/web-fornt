@@ -8,18 +8,8 @@
 
     <div class="content-menu">
       <div class="menu-list">
-        <div
-          class="menu-item-container"
-          v-for="(item, index) in menuList"
-          :key="index"
-          @mouseenter="handleHover(-1)"
-        >
-          <span
-            class="menu-item"
-            :class="{ active: index === activeIndex }"
-            @mouseenter="handleHover(index)"
-            @click="jumpPage(item)"
-          >
+        <div class="menu-item-container" v-for="(item, index) in menuList" :key="index" @mouseenter="handleHover(-1)">
+          <span class="menu-item" :class="{ active: index === activeIndex }" @mouseenter="handleHover(index)" @click="jumpPage(item, [i])">
             {{ item.title }}
           </span>
         </div>
@@ -27,18 +17,13 @@
     </div>
   </div>
 
-  <div
-    v-if="hoverIndex !== -1 && menuList[hoverIndex].child"
-    class="menu-child-list"
-    @mouseleave="handleHover(-1)"
-  >
+  <div v-if="hoverIndex !== -1 && menuList[hoverIndex].child" class="menu-child-list" @mouseleave="handleHover(-1)">
     <span
       class="menu-item"
       :class="{ active: index === activeChildIndex }"
       v-for="(i, key) in menuList[hoverIndex].child"
       :key="key"
-      @click="jumpPage(i)"
-    >
+      @click="jumpPage(i, [hover, j])">
       {{ i.title }}
     </span>
   </div>
@@ -53,48 +38,58 @@
       </el-carousel>
     </div>
   </div>
+  <!-- 导航 -->
+  <div class="nav-breader">
+    <div class="left">
+      <span v-for="i in navList" :key="i">{{ i.title }}</span>
+      <span>/</span>
+    </div>
+  </div>
 </template>
 
 <script setup name="header">
-import { useRoute } from "vue-router";
+import { useRoute } from 'vue-router'
 
-const activeIndex = ref(0);
-const hoverIndex = ref(-1);
-const route = useRoute();
-const router = useRouter();
-const activeChildIndex = ref(0);
-const bannerList = [
-  "/src/assets/img/index/banner.png",
-  "/src/assets/img/index/banner.png",
-  "/src/assets/img/index/banner.png",
-];
+const activeIndex = ref(0)
+const hoverIndex = ref(-1)
+const route = useRoute()
+const router = useRouter()
+const activeChildIndex = ref(0)
+const bannerList = ['/src/assets/img/banner-1.jpg', '/src/assets/img/banner-1.jpg', '/src/assets/img/banner-1.jpg']
 const menuList = [
-  { title: "首页", path: "/home" },
-  { title: "公司介绍", path: "/introduce" },
-  { title: "解决方案", path: "/solution" },
+  { title: '首页', path: '/home' },
+  { title: '公司介绍', path: '/introduce' },
+  { title: '解决方案', path: '/solution' },
   {
-    title: "成功案例",
-    path: "/example",
+    title: '成功案例',
+    path: '/example',
     child: [
-      { title: "智能家居", path: "/example/smartHome" },
-      { title: "指挥系统", path: "/example/smartSystem" },
-      { title: "智慧旅游", path: "/example/smartTravel" },
-      { title: "智慧校园", path: "/example/smartSchool" },
-      { title: "智慧医院", path: "/example/smartHospital" },
-      { title: "智慧园区", path: "/example/smartPark" },
-      { title: "智慧小区", path: "/example/smartCommunity" },
-      { title: "智慧建筑", path: "/example/smartBuild" },
+      { title: '智能家居', path: '/example/smartHome' },
+      { title: '指挥系统', path: '/example/smartSystem' },
+      { title: '智慧旅游', path: '/example/smartTravel' },
+      { title: '智慧校园', path: '/example/smartSchool' },
+      { title: '智慧医院', path: '/example/smartHospital' },
+      { title: '智慧园区', path: '/example/smartPark' },
+      { title: '智慧小区', path: '/example/smartCommunity' },
+      { title: '智慧建筑', path: '/example/smartBuild' },
     ],
   },
-  { title: "联系我们" },
-];
-const handleHover = index => {
-  hoverIndex.value = index;
-};
+  { title: '联系我们' },
+]
 
-const jumpPage = item => {
-  router.push(item.path);
-};
+const navList = ref([{ title: '首页', path: '/home' }])
+const handleHover = index => {
+  hoverIndex.value = index
+}
+
+const jumpPage = (item, indexArr) => {
+  router.push(item.path)
+  if (item.path !== '/home') {
+    let first = menuList[indexArr[0]] //二级菜单
+    let second = first.child(indexArr[1]) //三级菜单
+    navList.value = [navList.value, { title: first.title, path: frist.path }, { title: second.title, path: second.path }]
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -181,5 +176,10 @@ const jumpPage = item => {
       cursor: pointer;
     }
   }
+}
+
+.banner-img {
+  width: 100%;
+  height: 100%;
 }
 </style>
