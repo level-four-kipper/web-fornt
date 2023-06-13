@@ -9,7 +9,7 @@
     <div class="content-menu">
       <div class="menu-list">
         <div class="menu-item-container" v-for="(item, index) in menuList" :key="index" @mouseenter="handleHover(-1)">
-          <span class="menu-item" :class="{ active: index === activeIndex }" @mouseenter="handleHover(index)" @click="jumpPage(item, [i])">
+          <span class="menu-item" :class="{ active: index === activeIndex }" @mouseenter="handleHover(index)" @click="jumpPage([item])">
             {{ item.title }}
           </span>
         </div>
@@ -23,7 +23,7 @@
       :class="{ active: index === activeChildIndex }"
       v-for="(i, key) in menuList[hoverIndex].child"
       :key="key"
-      @click="jumpPage(i, [hover, j])">
+      @click="jumpPage([menuList[hoverIndex], i])">
       {{ i.title }}
     </span>
   </div>
@@ -41,8 +41,9 @@
   <!-- 导航 -->
   <div class="nav-breader">
     <div class="left">
-      <span v-for="i in navList" :key="i">{{ i.title }}</span>
-      <span>/</span>
+      <template v-for="i in navList" :key="i">
+        <span class="nav-text">{{ i.title }}</span>
+      </template>
     </div>
   </div>
 </template>
@@ -57,7 +58,7 @@ const router = useRouter()
 const activeChildIndex = ref(0)
 const bannerList = ['/src/assets/img/banner-1.jpg', '/src/assets/img/banner-1.jpg', '/src/assets/img/banner-1.jpg']
 const menuList = [
-  { title: '首页', path: '/home' },
+  { title: '首页', path: '/index' },
   { title: '公司介绍', path: '/introduce' },
   { title: '解决方案', path: '/solution' },
   {
@@ -77,18 +78,21 @@ const menuList = [
   { title: '联系我们' },
 ]
 
-const navList = ref([{ title: '首页', path: '/home' }])
+const navList = ref([menuList[0]])
 const handleHover = index => {
   hoverIndex.value = index
 }
 
-const jumpPage = (item, indexArr) => {
-  router.push(item.path)
-  if (item.path !== '/home') {
-    let first = menuList[indexArr[0]] //二级菜单
-    let second = first.child(indexArr[1]) //三级菜单
-    navList.value = [navList.value, { title: first.title, path: frist.path }, { title: second.title, path: second.path }]
+const jumpPage = arr => {
+  let targetItem = arr.slice(-1)[0] //取数组最后一项
+  console.log(arr, 'arr')
+  router.push(targetItem.path)
+  if (targetItem.path !== '/index') {
+    arr.map(i => {
+      navList.value.push(i)
+    })
   }
+  console.log(navList.value, ' navList.value ')
 }
 </script>
 
@@ -181,5 +185,36 @@ const jumpPage = (item, indexArr) => {
 .banner-img {
   width: 100%;
   height: 100%;
+}
+
+.nav-breader {
+  // background-color: #ccc;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(156, 172, 209, 0.3);
+  .left {
+    margin-left: 40px;
+    .nav-text {
+      margin-right: 40px;
+      color: #8c8c8c;
+      position: relative;
+      cursor: pointer;
+      &.active,
+      &:hover {
+        color: #4070f4;
+      }
+      &:not(:last-child)::after {
+        content: '';
+        width: 1px;
+        height: 14px;
+        background: #d8d8d8;
+        position: absolute;
+        top: 50%;
+        right: -20px;
+        transform: translateY(-50%) rotate(30deg);
+      }
+    }
+  }
 }
 </style>
