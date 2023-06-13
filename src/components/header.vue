@@ -39,7 +39,7 @@
     </div>
   </div>
   <!-- 导航 -->
-  <div class="nav-breader">
+  <div v-if="route.path !== '/index'" class="nav-breader">
     <div class="left">
       <template v-for="i in navList" :key="i">
         <span class="nav-text">{{ i.title }}</span>
