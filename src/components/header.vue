@@ -8,24 +8,27 @@
 
     <div class="content-menu">
       <div class="menu-list">
-        <div class="menu-item-container" v-for="(item, index) in menuList" :key="index" @mouseenter="handleHover(-1)">
-          <span class="menu-item" :class="{ active: index === activeIndex }" @mouseenter="handleHover(index)" @click="jumpPage([item])">
+        <div class="menu-item-container" v-for="(item, index) in menuList" :key="index" @mouseenter="handleHover(index)">
+          <span class="menu-item" :class="{ active: activeIndex === index }" @click="jumpPage(item, index)">
             {{ item.title }}
           </span>
         </div>
       </div>
     </div>
-  </div>
-
-  <div v-if="hoverIndex !== -1 && menuList[hoverIndex].child" class="menu-child-list" @mouseleave="handleHover(-1)">
-    <span
-      class="menu-item"
-      :class="{ active: index === activeChildIndex }"
-      v-for="(i, key) in menuList[hoverIndex].child"
-      :key="key"
-      @click="jumpPage([menuList[hoverIndex], i])">
-      {{ i.title }}
-    </span>
+    <div
+      v-if="hoverIndex !== -1 && menuList[hoverIndex].child"
+      class="menu-child-list"
+      @mouseenter="handleHover(index)"
+      @mouseleave="handleHover(-1)">
+      <span
+        class="menu-item"
+        :class="{ active: index === activeChildIndex }"
+        v-for="(i, key) in menuList[hoverIndex].child"
+        :key="key"
+        @click="jumpPage(i)">
+        {{ i.title }}
+      </span>
+    </div>
   </div>
 
   <!-- 轮播 -->
@@ -42,16 +45,17 @@
   <div v-if="route.path !== '/index'" class="nav-breader">
     <div class="left">
       <template v-for="i in navList" :key="i">
-        <span class="nav-text">{{ i.title }}</span>
+        <span class="nav-text" @click="jumpPage(i)">{{ i.title }}</span>
       </template>
     </div>
   </div>
 </template>
 
 <script setup name="header">
+import { computed, watch } from 'vue-demi'
 import { useRoute } from 'vue-router'
 
-const activeIndex = ref(0)
+const curPathIndex = ref(0)
 const hoverIndex = ref(-1)
 const route = useRoute()
 const router = useRouter()
@@ -78,21 +82,34 @@ const menuList = [
   { title: '联系我们' },
 ]
 
+const activeIndex = computed(() => {
+  return hoverIndex.value === -1 ? curPathIndex.value : hoverIndex.value
+})
+
 const navList = ref([menuList[0]])
 const handleHover = index => {
   hoverIndex.value = index
 }
+watch(
+  route,
+  (val, old) => {
+    if (route.path !== '/index') {
+      let arr = route.matched.slice(1).map(i => {
+        return { title: i.meta.title, path: i.path }
+      })
+      navList.value = [navList.value[0], ...arr]
+    }
+  },
+  { immediate: true },
+)
 
-const jumpPage = arr => {
-  let targetItem = arr.slice(-1)[0] //取数组最后一项
-  console.log(arr, 'arr')
-  router.push(targetItem.path)
-  if (targetItem.path !== '/index') {
-    arr.map(i => {
-      navList.value.push(i)
-    })
+watch(hoverIndex, (val, old) => {
+  if (val !== -1 && old !== 1) {
   }
-  console.log(navList.value, ' navList.value ')
+})
+const jumpPage = (item, index) => {
+  index !== undefined && (curPathIndex.value = index)
+  router.push(item.path)
 }
 </script>
 
@@ -141,7 +158,7 @@ const jumpPage = arr => {
       .menu-item-container {
         height: 100%;
         display: flex;
-        margin-right: 20px;
+        padding: 0 10px;
         align-items: center;
       }
       .menu-item {

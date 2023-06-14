@@ -3,14 +3,15 @@ import { usePermissStore } from '../store/permiss';
 import Home from '../views/home.vue';
 
 const routes: RouteRecordRaw[] = [
-  {
-    path: '/',
-    redirect: '/index',
-  },
+
   {
     path: '/',
     name: 'Home',
+    redirect: '/index',
     component: Home,
+    meta: {
+      title: '首页',
+    },
     children: [
       {
         path: '/index',
