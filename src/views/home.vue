@@ -1,21 +1,13 @@
 <template>
-  <Header></Header>
- 
-  <div class="content">
+  <Header></Header> 
+  <div class="main-container">
     <router-view />
   </div>
   <Footer></Footer>
 </template>
-<script setup lang="ts">
-import { useSidebarStore } from "../store/sidebar";
-import { useTagsStore } from "../store/tags";
-import Header from "../components/header.vue";
-import vSidebar from "../components/sidebar.vue";
-import vTags from "../components/tags.vue";
-import Footer from "../components/footer.vue";
-
-const sidebar = useSidebarStore();
-const tags = useTagsStore();
+<script setup>
+import Header from '../components/header.vue'
+import Footer from '../components/footer.vue'
 </script>
 
 <style lang="scss" scoped>
