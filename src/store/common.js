@@ -22,6 +22,7 @@ export const useCommon = defineStore('common', {
           ],
         },
         { title: '联系我们', path: '/relation' },
+        // { title: '加入我们', path: '/join' },
       ],
     }
   },

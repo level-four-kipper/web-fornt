@@ -156,19 +156,19 @@ const routes: RouteRecordRaw[] = [
         },
         component: () => import('../views/relation.vue'),
       },
-
+      {
+        path: '/join',
+        name: 'join',
+        meta: {
+          title: '加入我们',
+        },
+        component: () => import('../views/join.vue'),
+      },
 
 
     ],
   },
-  {
-    path: '/login',
-    name: 'Login',
-    meta: {
-      title: '登录',
-    },
-    component: () => import(/* webpackChunkName: "login" */ '../views/login.vue'),
-  },
+ 
   {
     path: '/403',
     name: '403',

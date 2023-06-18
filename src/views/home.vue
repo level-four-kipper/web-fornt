@@ -1,5 +1,5 @@
 <template>
-  <Header></Header> 
+  <Header></Header>
   <div class="main-container">
     <router-view />
   </div>
@@ -11,8 +11,11 @@ import Footer from '../components/footer.vue'
 </script>
 
 <style lang="scss" scoped>
-.content {
+.main-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
   background: #fff;
-  padding: 0;
+  justify-content: center;
 }
 </style>

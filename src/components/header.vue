@@ -15,19 +15,18 @@
         </div>
       </div>
     </div>
-    <div
-      v-if="hoverIndex !== -1 && menuList[hoverIndex].child"
-      class="menu-child-list"
-      @mouseenter="handleHover(index)"
-      @mouseleave="handleHover(-1)">
-      <span
+    <div class="menu-child-list" v-if="hoverIndex !== -1 && menuList[hoverIndex].child" @mouseleave="handleHover(-1)">
+      <!-- <span
         class="menu-item"
-        :class="{ active: index === activeChildIndex }"
+        :class="{ active: i.path === route.path }"
         v-for="(i, key) in menuList[hoverIndex].child"
         :key="key"
         @click="jumpPage(i)">
         {{ i.title }}
-      </span>
+      </span> -->
+      <el-tabs v-model="childTabIndex" @tab-click="handleTabClick">
+        <el-tab-pane :label="i.title" :name="key" v-for="(i, key) in menuList[hoverIndex].child" :key="key"> </el-tab-pane>
+      </el-tabs>
     </div>
   </div>
 
@@ -42,14 +41,14 @@
     </div>
   </div>
   <!-- 导航 -->
-  <!-- <div class="nav-breader-container">
-    <div v-if="route.path !== '/index'" class="nav-breader">
+  <div v-if="route.path !== '/index'" class="nav-bread-container">
+    <div class="nav-bread">
       <div class="left">
         <template v-for="i in navList" :key="i">
           <span class="nav-text" @click="jumpPage(i)">{{ i.title }}</span>
         </template>
       </div>
-      <div class="right" v-if="menuList[curPathIndex].child">
+      <!-- <div class="right" v-if="menuList[curPathIndex].child">
         <span
           class="nav-menu-item"
           :class="{ active: index === activeChildIndex }"
@@ -58,9 +57,9 @@
           @click="jumpPage(i)">
           {{ i.title }}
         </span>
-      </div>
+      </div> -->
     </div>
-  </div> -->
+  </div>
 </template>
 
 <script setup name="header">
@@ -72,8 +71,9 @@ const common = useCommon()
 const route = useRoute()
 const router = useRouter()
 
-const curPathIndex = ref(0)
+const curPathIndex = ref(0) //当前一级菜单下标
 const hoverIndex = ref(-1)
+const childTabIndex = ref(-1)
 const activeChildIndex = ref(0)
 const bannerList = ['/src/assets/img/banner-1.jpg', '/src/assets/img/banner-1.jpg', '/src/assets/img/banner-1.jpg']
 const menuList = common.menuList
@@ -83,8 +83,14 @@ const activeIndex = computed(() => {
 })
 
 const navList = ref([menuList[0]])
+
 const handleHover = index => {
   hoverIndex.value = index
+}
+// tab点击
+const handleTabClick = val => {
+  let item = menuList[hoverIndex.value].child[val.index]
+  router.push(item.path)
 }
 
 watch(
@@ -99,6 +105,10 @@ watch(
       })
       navList.value = [navList.value[0], ...arr]
     }
+    //点击一级菜单，二级菜单高亮清空
+    if (route.matched.length < 3) {
+      childTabIndex.value = -1
+    }
   },
   { immediate: true },
 )
@@ -108,7 +118,11 @@ watch(hoverIndex, (val, old) => {
   }
 })
 const jumpPage = (item, index) => {
-  index !== undefined && (curPathIndex.value = index)
+  console.log('juml', item)
+  if (index !== undefined) {
+    curPathIndex.value = index
+    // childTabIndex.value = -1 //点击一级菜单，二级菜单高亮清空
+  }
   router.push(item.path)
 }
 </script>
@@ -204,7 +218,7 @@ const jumpPage = (item, index) => {
   width: 100%;
   height: 100%;
 }
-.nav-breader-container {
+.nav-bread-container {
   // background-color: #ccc;
   height: 60px;
   width: 100%;
@@ -215,7 +229,7 @@ const jumpPage = (item, index) => {
   display: flex;
   align-items: center;
   border-bottom: 1px solid rgba(156, 172, 209, 0.3);
-  .nav-breader {
+  .nav-bread {
     width: 1200px;
     display: flex;
     align-items: center;
@@ -224,14 +238,16 @@ const jumpPage = (item, index) => {
       // margin-left: 40px;
       .nav-text {
         margin-right: 40px;
-        color: #8c8c8c;
+        // color: #8c8c8c;
         position: relative;
+          color: #8c8c8c;
         cursor: pointer;
         &.active,
         &:hover {
           color: #4070f4;
         }
         &:not(:last-child)::after {
+         
           content: '';
           width: 1px;
           height: 14px;
@@ -240,6 +256,10 @@ const jumpPage = (item, index) => {
           top: 50%;
           right: -20px;
           transform: translateY(-50%) rotate(30deg);
+        }
+        &:last-child{
+        color: #4070f4;
+
         }
       }
     }
